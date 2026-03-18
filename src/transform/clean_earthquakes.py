@@ -1,10 +1,26 @@
 from src.db import get_connection
 from datetime import datetime
-
+import json
 def convert_time(ms):
     if not ms:
         return None
     return datetime.fromtimestamp(ms / 1000)
+
+def  is_valid(event_id, magnitude, event_time, coordinates):
+    
+    if not event_id:
+        return False, "missing event_id"
+    
+    if magnitude is None:
+        return False, "missing magnitude"
+    
+    if event_time is None:
+        return False, "invalid_event_time"
+    
+    if not coordinates or len(coordinates) < 3:
+        return False, "missing_coordinates"
+    
+    return True, None
 
 def transform():
 
@@ -30,6 +46,15 @@ def transform():
         latitude = coordinates[1]
         depth = coordinates[2]
 
+        valid , reason = is_valid(event_id, magnitude, event_time, coordinates)
+
+        if not valid:
+            cur.execute("""
+                        INSERT INTO rejected_earthquakes(raw_id, reason, raw_data)
+                        VALUES (%s, %s, %s)
+                        """, (raw_id, reason, json.dumps(raw)))
+            continue
+        
         cur.execute(
             """
             INSERT INTO staging_earthquakes
