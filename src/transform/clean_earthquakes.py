@@ -27,11 +27,20 @@ def transform():
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT id, raw_data FROM raw_earthquakes") 
+    cur.execute("SELECT last_raw_id FROM pipeline_state LIMIT 1")
+    result = cur.fetchone()
+    last_processed_id = result[0] if result else 0
+
+    cur.execute("""SELECT id, raw_data FROM raw_earthquakes 
+                WHERE id > %s 
+                ORDER BY id""", (last_processed_id,))
     rows = cur.fetchall()
 
     for raw_id, raw in rows:
 
+        if rows:
+            max_id = max(r[0] for r in rows)
+            cur.execute("UPDATE pipeline_state SET last_raw_id = %s", (max_id,))    
         properties = raw.get("properties", {})
         geometry = raw.get("geometry", {})
 
@@ -69,7 +78,7 @@ def transform():
     conn.commit()
     cur.close()
     conn.close()
-
+    print("Rows fetched:", len(rows))
     print("Staging load complete")
 
 if __name__ == "__main__":
