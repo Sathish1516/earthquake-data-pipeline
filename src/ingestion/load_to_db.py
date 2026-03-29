@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from src.db import get_connection
+from psycopg2.extras import execute_batch
 
 RAW_FOLDER = Path("data/raw")
 
@@ -15,16 +16,17 @@ def load_files():
         with open(file) as f:
             data = json.load(f)
 
+        records = []
         for record in data["features"]:
-
-            cur.execute(
-                """
-                INSERT INTO raw_earthquakes(fetched_at, raw_data, source_file)
-                VALUES (%s, %s, %s)
-                """,
-                (datetime.now(), json.dumps(record), file.name)
-            )
-
+            records.append((
+                datetime.now(),
+                json.dumps(record),
+                file.name
+            ))
+        execute_batch(cur, """
+            INSERT INTO raw_earthquakes (fetched_at, raw_data, source_file) VALUES (%s, %s, %s)""", 
+            records)
+        
     conn.commit()
     cur.close()
     conn.close()
