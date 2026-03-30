@@ -1,4 +1,6 @@
 from src.db import get_connection
+from src.logger import get_logger
+logger = get_logger()
 
 def build_summary():
 
@@ -20,7 +22,8 @@ def build_summary():
     conn.commit()
     cur.close()
     conn.close()    
-    print("Daily smmary built")
+    logger.info("Building daily summary")
+    logger.info("Summary build complete")
 
 if __name__ == "__main__":
     build_summary()

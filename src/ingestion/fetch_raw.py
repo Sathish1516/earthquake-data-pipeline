@@ -2,7 +2,9 @@ import requests
 import json
 from datetime import datetime,timezone
 from pathlib import Path
+from src.logger import get_logger
 
+logger = get_logger()
 URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=20"
 
 def fetch_earthquakes():
@@ -18,7 +20,7 @@ def fetch_earthquakes():
     with open(filepath, "w") as f:
         json.dump(data, f)
 
-    print(f"Saved raw data to {filepath}")
+    logger.info(f"Saved raw data to {filepath}")
 
 if __name__ == "__main__":
     fetch_earthquakes()

@@ -1,6 +1,9 @@
 from src.db import get_connection
 from datetime import datetime
 import json
+from src.logger import get_logger
+logger = get_logger()
+
 def convert_time(ms):
     if not ms:
         return None
@@ -78,8 +81,8 @@ def transform():
     conn.commit()
     cur.close()
     conn.close()
-    print("Rows fetched:", len(rows))
-    print("Staging load complete")
+    logger.info(f"Processing {len(rows)} raw records")
+    logger.info("Transformation complete")
 
 if __name__ == "__main__":
     transform()

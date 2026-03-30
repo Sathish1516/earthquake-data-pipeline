@@ -3,7 +3,8 @@ from pathlib import Path
 from datetime import datetime
 from src.db import get_connection
 from psycopg2.extras import execute_batch
-
+from src.logger import get_logger
+logger = get_logger()
 RAW_FOLDER = Path("data/raw")
 
 def load_files():
@@ -31,7 +32,8 @@ def load_files():
     cur.close()
     conn.close()
 
-    print("Loaded earthquake data into database")
+    logger.info("Started data fetch")
+    logger.info(f"Fetched {len(data['features'])} events")
 
 if __name__ == "__main__":
     load_files()
