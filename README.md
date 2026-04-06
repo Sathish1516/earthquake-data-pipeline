@@ -84,6 +84,48 @@ docker compose up --build
 
 ---
 
+## 🏗️ Architecture Diagram
+
+        +-------------------+
+        |   USGS API        |
+        +--------+----------+
+                 |
+                 v
+        +-------------------+
+        |   Raw Layer       |
+        | (JSONB Storage)   |
+        +--------+----------+
+                 |
+                 v
+        +-------------------+
+        | Validation Layer  |
+        | (Reject Handling) |
+        +--------+----------+
+                 |
+                 v
+        +-------------------+
+        | Staging Layer     |
+        | (Cleaned Data)    |
+        +--------+----------+
+                 |
+                 v
+        +-------------------+
+        | Analytics Layer   |
+        | (Daily Summary)   |
+        +-------------------+
+
+---
+
+## 🎓 Key Learnings
+
+- Built production-style ETL pipeline
+- Implemented incremental processing using checkpoint tables
+- Designed validation system with rejected data handling
+- Optimized performance using batch inserts and indexing
+- Containerized pipeline using Docker
+
+---
+
 ## 📌 Future Improvements
 
 * Airflow orchestration
