@@ -1,11 +1,11 @@
+import os
 import psycopg2
 
 def get_connection():
-    conn = psycopg2.connect(
-        host="localhost",
-        database="earthquakes_db",
-        user="postgres",
-        password="postgres",
+    return psycopg2.connect(
+        host=os.getenv("DB_HOST", "localhost"),
+        database=os.getenv("DB_NAME", "earthquakes_db"),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("DB_PASSWORD", "postgres"),
         port="5432"
     )
-    return conn
